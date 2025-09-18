@@ -1,6 +1,10 @@
 <?php
 
 return [
+    'filesystem' => [
+        'storage' => "{$_SERVER['DOCUMENT_ROOT']}/@storage/",
+    ],
+
     // Dati per accedere al database MariaDB
     'mariadb' => [
         'dbhost' => 'localhost',                // Host dove è presente il database
