@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     /** @var PDOStatement $upsert */
     $upsert = $pdo->prepare('
-    INSERT INTO users_logs (user_id)
+    INSERT INTO `users_logs` (user_id)
     VALUES (:user_id)
     ON DUPLICATE KEY
         UPDATE latest_login = NOW()');

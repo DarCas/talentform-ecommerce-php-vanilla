@@ -1,6 +1,7 @@
 <?php
 /**
  * @var PDO $pdo
+ * @var array $config
  */
 
 require_once "{$_SERVER['DOCUMENT_ROOT']}/@assets/php/includes/admin/bootstrap.inc.php";
@@ -65,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $insert = $pdo->prepare('
-        INSERT INTO products (id, category, title, description, image, qty)
+        INSERT INTO `products` (`id`, `category`, `title`, `description`, `image`, `qty`)
         VALUES (:id, :category, :title, :description, :image, :qty)');
 
         $insert->bindValue(':id', $data['id']);
