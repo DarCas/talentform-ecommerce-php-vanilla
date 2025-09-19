@@ -3,6 +3,7 @@
 return [
     'filesystem' => [
         'storage' => "{$_SERVER['DOCUMENT_ROOT']}/@storage/",
+        'products' => "{$_SERVER['DOCUMENT_ROOT']}/@storage/products/",
     ],
 
     // Dati per accedere al database MariaDB

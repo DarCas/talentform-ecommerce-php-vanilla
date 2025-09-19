@@ -8,8 +8,7 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/@assets/php/includes/admin/bootstrap.i
 
 // Accetto solo richiesta con method POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Mi creo una collection con i dati inviati dal form così da essere sicuri di non intercettare altri campi non
-    // attesi.
+    // Mi creo una collection con i dati inviati dal form così da essere sicuri di non intercettare altri campi non attesi.
     $data = [
         'category' => trim($_POST['category'] ?? ''),
         'description' => trim($_POST['description'] ?? ''),
@@ -56,30 +55,116 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Se ci sono errori, reindirizzo alla pagina di login con gli errori
     if (!empty($errors)) {
+        if (!empty($data['id'])) {
+            $errors['id'] = $data['id'];
+        }
+
         header('Location: /admin/products/upsert.php?' . http_build_query($errors));
         exit;
     }
 
     if (empty($data['id'])) {
-        if (!file_exists($config['filesystem']['storage'])) {
-            mkdir("{$config['filesystem']['storage']}/products", 0755, true);
+        // Creo un nuovo prodotto
+
+        // Genero lo UUIDv4 per il prodotto
+        $id = UuidV4();
+
+        /** @var string|null $image */
+        $image = null;
+
+        if ($data['image']['size'] !== 0) {
+            // Se effettivamente ho fatto un upload, salvo l'immagine nel percorso specificato di seguito
+
+            if (!file_exists($config['filesystem']['products'])) {
+                // Se la cartella non esiste, la creo
+
+                mkdir($config['filesystem']['products'], 0755, true);
+            }
+
+            // Elaboro l'estensione dell'immagine
+            $extension = ($data['image']['type'] === 'image/jpeg') ? 'jpg' : 'png';
+
+            // Salvo l'immagine nel percorso specificato
+            move_uploaded_file($data['image']['tmp_name'], "{$config['filesystem']['products']}/{$id}.{$extension}");
+
+            // Verifico che l'immagine sia stata salvata correttamente
+            if (file_exists("{$config['filesystem']['products']}/{$id}.{$extension}")) {
+
+                // Salvo il percorso dell'immagine nel database
+                $image = "{$id}.{$extension}";
+            }
         }
 
         $insert = $pdo->prepare('
         INSERT INTO `products` (`id`, `category`, `title`, `description`, `image`, `qty`)
         VALUES (:id, :category, :title, :description, :image, :qty)');
 
-        $insert->bindValue(':id', $data['id']);
+        $insert->bindValue(':id', $id);
         $insert->bindValue(':category', $data['category']);
         $insert->bindValue(':title', $data['title']);
         $insert->bindValue(':description', $data['description']);
-        $insert->bindValue(':image', $data['image']);
+        $insert->bindValue(':image', $image);
         $insert->bindValue(':qty', $data['qty'], PDO::PARAM_INT);
-//        $insert->execute();
+        $insert->execute();
 
-        header('Location: /admin/products/upsert.php?success=true');
+        header('Location: /admin/products?insert=true');
     } else {
-        // Aggiorno il prodotto
+        // Modifico un prodotto esistente
+
+        /**
+         * Variabile valorizzata con l'attualmente valore del campo "image" presente nella tabella del prodotto.
+         * @var string|null $image
+         */
+        $image = $_POST['prevImage'] ?? null;
+
+        if ($data['image']['size'] !== 0) {
+            // Se effettivamente ho fatto un upload, salvo l'immagine nel percorso specificato di seguito
+
+            if (!file_exists($config['filesystem']['products'])) {
+                // Se la cartella non esiste, la creo
+
+                mkdir($config['filesystem']['products'], 0755, true);
+            }
+
+            // Trovo eventuali immagini pregresse del prodotto e le cancello una per una
+            $files = glob("{$config['filesystem']['products']}/{$data['id']}.{jpg,png}", GLOB_BRACE);
+            foreach ($files as $file) {
+                unlink($file);
+            }
+
+            // Elaboro l'estensione dell'immagine
+            $extension = ($data['image']['type'] === 'image/jpeg') ? 'jpg' : 'png';
+
+            // Salvo l'immagine nel percorso specificato
+            move_uploaded_file($data['image']['tmp_name'], "{$config['filesystem']['products']}/{$data['id']}.{$extension}");
+
+            // Verifico che l'immagine sia stata salvata correttamente
+            if (file_exists("{$config['filesystem']['products']}/{$data['id']}.{$extension}")) {
+
+                // Salvo il percorso dell'immagine nel database
+                $image = "{$data['id']}.{$extension}";
+            }
+        }
+
+        /** @var PDOStatement $update */
+        $update = $pdo->prepare('
+        UPDATE `products`
+        SET
+            `category` = :category,
+            `title` = :title,
+            `description` = :description,
+            `image` = :image,
+            `qty` = :qty
+        WHERE `id` = :id');
+        $update->bindValue(':category', $data['category']);
+        $update->bindValue(':title', $data['title']);
+        $update->bindValue(':description', $data['description']);
+        $update->bindValue(':image', $image);
+        $update->bindValue(':qty', $data['qty'], PDO::PARAM_INT);
+        $update->bindValue(':id', $data['id']);
+        $update->execute();
+
+        header('Location: /admin/products?update=true');
     }
 } else {
     // Reindirizzo al back-end
