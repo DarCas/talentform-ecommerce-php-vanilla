@@ -85,6 +85,17 @@ switch (true) {
 
     <?php
     /**
+     * Ordinamento dei risultati
+     */
+    $orderBy = $_GET['orderBy'] ?? 'category';
+
+    $orderDesc = (isset($_GET['orderDesc']) && $_GET['orderDesc']) ? 'DESC' : 'ASC';
+
+    if (!in_array($orderBy, ['category', 'title', 'qty', 'price'])) {
+        $orderBy = 'category';
+    }
+
+    /**
      * Quanti prodotti devo visualizzare
      */
     $itemsCount = $pdo->query('SELECT COUNT(*) FROM products')->fetchColumn();
@@ -93,24 +104,104 @@ switch (true) {
         $template,
         $itemsPerPage,
         $offset,
-    ] = paginationRender(10, $itemsCount, $_GET['p'] ?? null)
+    ] = paginationRender(
+        itemsPerPage: 10,
+        itemsCount: $itemsCount,
+        currentPage: $_GET['page'] ?? null,
+        pageName: 'page'
+    )
     ?>
 
     <table class="table table-striped shadow">
         <thead>
         <tr>
-            <th scope="col" style="width: 74px">&nbsp;</th>
-            <th scope="col" style="width: 74px">&nbsp;</th>
-            <th scope="col">Categoria</th>
-            <th scope="col">Titolo</th>
-            <th scope="col">Q.tà</th>
-            <th scope="col">Prezzo</th>
-            <th scope="col" style="width: 150px">
-                <!-- Menù a tendina -->
-            </th>
-        </tr>
-        <tr>
             <td colspan="7"><?= $template; ?></td>
+        </tr>
+
+        <tr>
+            <th scope="col" style="width: 74px">&nbsp;</th>
+            <th scope="col" style="width: 74px">&nbsp;</th>
+            <th scope="col">
+                <a class="page-link" href="./?orderBy=category<?php
+
+                if ($orderBy === 'category') {
+                    echo $orderDesc === 'DESC' ? '&orderDesc=0' : '&orderDesc=1';
+                } else {
+                    echo '&orderDesc=0';
+                }
+
+                ?>">
+                    Categoria
+
+                    <?php
+                    if ($orderBy === 'category') {
+                        echo $orderDesc === 'DESC' ? ' <i class="bi bi-sort-alpha-up"></i>' :
+                            ' <i class="bi bi-sort-alpha-down"></i>';
+                    }
+                    ?>
+                </a>
+            </th>
+            <th scope="col">
+                <a class="page-link" href="./?orderBy=title<?php
+
+                if ($orderBy === 'title') {
+                    echo $orderDesc === 'DESC' ? '&orderDesc=0' : '&orderDesc=1';
+                } else {
+                    echo '&orderDesc=0';
+                }
+
+                ?>">
+                    Titolo
+
+                    <?php
+                    if ($orderBy === 'title') {
+                        echo $orderDesc === 'DESC' ? ' <i class="bi bi-sort-alpha-up"></i>' :
+                            ' <i class="bi bi-sort-alpha-down"></i>';
+                    }
+                    ?>
+                </a>
+            </th>
+            <th scope="col">
+                <a class="page-link" href="./?orderBy=qty<?php
+
+                if ($orderBy === 'qty') {
+                    echo $orderDesc === 'DESC' ? '&orderDesc=0' : '&orderDesc=1';
+                } else {
+                    echo '&orderDesc=0';
+                }
+
+                ?>">
+                    Q.tà
+
+                    <?php
+                    if ($orderBy === 'qty') {
+                        echo $orderDesc === 'DESC' ? ' <i class="bi bi-sort-numeric-up"></i>' :
+                            ' <i class="bi bi-sort-numeric-down"></i>';
+                    }
+                    ?>
+                </a>
+            </th>
+            <th scope="col">
+                <a class="page-link" href="./?orderBy=price<?php
+
+                if ($orderBy === 'price') {
+                    echo $orderDesc === 'DESC' ? '&orderDesc=0' : '&orderDesc=1';
+                } else {
+                    echo '&orderDesc=0';
+                }
+
+                ?>">
+                    Prezzo
+
+                    <?php
+                    if ($orderBy === 'price') {
+                        echo $orderDesc === 'DESC' ? ' <i class="bi bi-sort-numeric-up"></i>' :
+                            ' <i class="bi bi-sort-numeric-down"></i>';
+                    }
+                    ?>
+                </a>
+            </th>
+            <th scope="col" style="width: 150px"></th>
         </tr>
         </thead>
 
@@ -122,8 +213,13 @@ switch (true) {
 
         <tbody>
         <?php
+
         /** @var PDOStatement $select */
-        $select = $pdo->query("SELECT * FROM products LIMIT {$itemsPerPage} OFFSET {$offset}");
+        $select = $pdo->query("
+        SELECT *
+        FROM products
+        ORDER BY {$orderBy} {$orderDesc}
+        LIMIT {$itemsPerPage} OFFSET {$offset}");
         $select->execute();
 
         $products = $select->fetchAll(PDO::FETCH_ASSOC);

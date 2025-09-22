@@ -1,6 +1,8 @@
 {
     "require": {
         "fakerphp/faker": "^1.24",
-        "snlbaral/faker-ecommerce": "^2.0"
+        "snlbaral/faker-ecommerce": "^2.0",
+        "ext-pdo": "*",
+        "ext-intl": "*"
     }
 }

@@ -1,3 +1,21 @@
 html, body {
     background: #e1e1e1;
 }
+
+.twoline-ellipsis {
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: wrap !important;
+}
+
+.threeline-ellipsis {
+    display: -webkit-box !important;
+    -webkit-line-clamp: 3 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: wrap !important;
+}

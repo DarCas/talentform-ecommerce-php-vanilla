@@ -8,15 +8,19 @@
  * @param int|null $currentPage Pagina corrente
  * @param int $flexThreshold Numero di pagine a partire dal quale la paginazione diventa flessibile
  * @param int $range Numero di pagine da mostrare ai lati della paginazione flessibile
+ * @param string $pageName Nome della variabile GET che contiene il numero della pagina
+ * @param string $align Allineamento menù di paginazione "start", "center" o "end"
  *
  * @return array [0 => template, 1 => itemsPerPage, 2 => offset]
  */
 function paginationRender(
-    int $itemsPerPage,
-    int $itemsCount,
+    int      $itemsPerPage,
+    int      $itemsCount,
     int|null $currentPage = 1,
-    int $flexThreshold = 10,
-    int $range = 4,
+    int      $flexThreshold = 10,
+    int      $range = 4,
+    string   $pageName = 'p',
+    string   $align = 'end',
 ): array
 {
     /**
@@ -43,10 +47,15 @@ function paginationRender(
         </div>
         <div class="col-8">
             <nav aria-label="Page navigation">
-                <ul class="pagination justify-content-center mb-0">
+                <ul class="pagination justify-content-<?= $align; ?> mb-0">
                     <!-- Pagina precedente -->
                     <li class="page-item <?= $currentPage === 1 ? 'disabled' : '' ?>">
-                        <a href="?p=<?= $currentPage - 1 ?>" class="page-link">
+                        <a href="?<?php
+                        $queryString = $_GET;
+                        $queryString[$pageName] = $currentPage - 1;
+
+                        echo http_build_query($queryString);
+                        ?>" class="page-link">
                             <i class="bi bi-caret-left"></i>
                         </a>
                     </li>
@@ -56,7 +65,13 @@ function paginationRender(
                         if ($currentPage > ($range + 2)) {
                             ?>
                             <li class="page-item">
-                                <a class="page-link <?= $currentPage === 1 ? 'disabled' : '' ?>" href="?p=1">1</a>
+                                <a class="page-link <?= $currentPage === 1 ? 'disabled' : '' ?>"
+                                   href="?<?php
+                                   $queryString = $_GET;
+                                   $queryString[$pageName] = 1;
+
+                                   echo http_build_query($queryString);
+                                   ?>">1</a>
                             </li>
                             <li class="page-item disabled"><span class="page-link">...</span></li>
                             <?php
@@ -66,7 +81,12 @@ function paginationRender(
                             ?>
                             <li class="page-item">
                                 <a class="page-link <?= $currentPage === $i ? 'disabled' : '' ?>"
-                                   href="?p=<?= $i ?>"><?= $i; ?></a>
+                                   href="?<?php
+                                   $queryString = $_GET;
+                                   $queryString[$pageName] = $i;
+
+                                   echo http_build_query($queryString);
+                                   ?>"><?= $i; ?></a>
                             </li>
                             <?php
                         }
@@ -76,7 +96,12 @@ function paginationRender(
                             <li class="page-item disabled"><span class="page-link">...</span></li>
                             <li class="page-item">
                                 <a class="page-link <?= $currentPage === 1 ? 'disabled' : '' ?>"
-                                   href="?p=<?= $pages ?>"><?= $pages ?></a>
+                                   href="?<?php
+                                   $queryString = $_GET;
+                                   $queryString[$pageName] = $pages;
+
+                                   echo http_build_query($queryString);
+                                   ?>"><?= $pages ?></a>
                             </li>
                             <?php
                         }
@@ -85,7 +110,12 @@ function paginationRender(
                             ?>
                             <li class="page-item">
                                 <a class="page-link <?= $currentPage === $i ? 'disabled' : '' ?>"
-                                   href="?p=<?= $i ?>"><?= $i; ?></a>
+                                   href="?<?php
+                                   $queryString = $_GET;
+                                   $queryString[$pageName] = $i;
+
+                                   echo http_build_query($queryString);
+                                   ?>"><?= $i; ?></a>
                             </li>
                             <?php
                         }
@@ -94,7 +124,12 @@ function paginationRender(
 
                     <!-- Pagina successiva -->
                     <li class="page-item <?= $currentPage == $pages ? 'disabled' : '' ?>">
-                        <a class="page-link" href="?p=<?= $currentPage + 1 ?>">
+                        <a class="page-link" href="?<?php
+                        $queryString = $_GET;
+                        $queryString[$pageName] = $currentPage + 1;
+
+                        echo http_build_query($queryString);
+                        ?>">
                             <i class="bi bi-caret-right"></i>
                         </a>
                     </li>
