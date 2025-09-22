@@ -13,4 +13,5 @@ if ($_SERVER['SCRIPT_NAME'] !== '/admin/@action/login.php') {
     require_once "{$_SERVER['DOCUMENT_ROOT']}/@assets/php/functions/admin/authentication.function.php";
 }
 
+require_once "{$_SERVER['DOCUMENT_ROOT']}/@assets/php/functions/admin/pagination.render.function.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/@assets/php/functions/uuidv4.function.php";

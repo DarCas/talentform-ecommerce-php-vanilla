@@ -83,6 +83,19 @@ switch (true) {
         </div>
     </div>
 
+    <?php
+    /**
+     * Quanti prodotti devo visualizzare
+     */
+    $itemsCount = $pdo->query('SELECT COUNT(*) FROM products')->fetchColumn();
+
+    [
+        $template,
+        $itemsPerPage,
+        $offset,
+    ] = paginationRender(10, $itemsCount, $_GET['p'] ?? null)
+    ?>
+
     <table class="table table-striped shadow">
         <thead>
         <tr>
@@ -96,54 +109,21 @@ switch (true) {
                 <!-- Menù a tendina -->
             </th>
         </tr>
+        <tr>
+            <td colspan="7"><?= $template; ?></td>
+        </tr>
         </thead>
-
-        <?php
-        $itemsPerPage = 25;
-
-        $count = $pdo->query('SELECT COUNT(*) FROM products')
-            ->fetchColumn();
-
-
-        $pages = ceil($count / $itemsPerPage);
-        ?>
 
         <tfoot>
         <tr>
-            <td colspan="7">
-                <nav aria-label="Page navigation example">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item disabled">
-                            <a class="page-link"><i class="bi bi-caret-left"></i></a>
-                        </li>
-
-                        <?php
-                        for ($i = 1; $i <= $pages; ++$i) {
-                            ?>
-                            <li class="page-item">
-                                <a class="page-link" href="#"><?= $i;?></a>
-                            </li>
-                            <?php
-                        }
-                        ?>
-
-                        <li class="page-item">
-                            <a class="page-link" href="#">
-                                <i class="bi bi-caret-right"></i>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-            </td>
+            <td colspan="7"><?= $template; ?></td>
         </tr>
         </tfoot>
 
         <tbody>
         <?php
-
-
         /** @var PDOStatement $select */
-        $select = $pdo->query('SELECT * FROM products LIMIT 25');
+        $select = $pdo->query("SELECT * FROM products LIMIT {$itemsPerPage} OFFSET {$offset}");
         $select->execute();
 
         $products = $select->fetchAll(PDO::FETCH_ASSOC);
