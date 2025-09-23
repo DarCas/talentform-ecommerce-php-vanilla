@@ -43,7 +43,7 @@ function isCurrentPage(string $page): bool
                 <div class="input-group">
                     <input class="form-control" type="search" name="q" placeholder="Cerca un prodotto"
                            value="<?= htmlentities($_GET['q'] ?? '') ?>"
-                           aria-label="Cerca un prodotto" />
+                           aria-label="Cerca un prodotto"/>
                     <button class="btn btn-success" type="submit"><i class="bi bi-search"></i></button>
                 </div>
 
@@ -51,3 +51,20 @@ function isCurrentPage(string $page): bool
         </div>
     </div>
 </nav>
+<script>
+    const inputSearch = document.querySelector('input[name="q"]');
+    inputSearch.addEventListener('input', () => {
+        if (inputSearch.value === '') {
+            location.href = './<?php
+
+                $queryString = $_GET;
+                unset($queryString['q']);
+
+                if (count($queryString) > 0) {
+                    echo '?' . http_build_query($queryString);
+                }
+
+                ?>';
+        }
+    })
+</script>

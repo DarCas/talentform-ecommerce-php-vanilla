@@ -9,12 +9,12 @@ try {
     /**
      * Ordinamento dei risultati
      */
-    $orderBy = $_GET['orderBy'] ?? 'category';
+    $orderBy = $_GET['orderBy'] ?? 'title';
 
     $orderDesc = (isset($_GET['orderDesc']) && $_GET['orderDesc']) ? 'DESC' : 'ASC';
 
-    if (!in_array($orderBy, ['category', 'title', 'qty', 'price'])) {
-        $orderBy = 'category';
+    if (!in_array($orderBy, ['title', 'price'])) {
+        $orderBy = 'title';
     }
 
     $filter = [
@@ -52,6 +52,7 @@ try {
     SELECT *
     FROM products
     WHERE ' . implode(' AND ', $filter) . "
+    ORDER BY {$orderBy} {$orderDesc}
     LIMIT {$itemsPerPage} OFFSET {$offset}");
     $products = $select->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
@@ -91,8 +92,18 @@ try {
                                         <?= $product['title'] ?>
                                     </p>
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <a href="/carts/@action/add.php?id=<?= $product['id'] ?>"
-                                           class="btn btn-sm btn-primary <?= $product['qty'] > 0 ? '' : 'disabled' ?>">
+                                        <a href="/carts/@action/add.php?id=<?= $product['id'] ?>&returnUrl=<?= urlencode($_SERVER['REQUEST_URI']) ?>"
+                                           class="btn btn-sm <?php
+
+                                           if (($product['qty'] <= 0) ||
+                                               inCart($product['id'])
+                                           ) {
+                                               echo 'disabled';
+                                           } else {
+                                               echo 'btn-primary';
+                                           }
+
+                                           ?>">
                                             <i class="bi bi-cart-plus-fill"></i>
                                         </a>
 
@@ -129,13 +140,54 @@ try {
                     <div class="card-body">
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                Titolo
+                                <a href="./?<?php
+
+                                $queryString = $_GET;
+                                $queryString['orderBy'] = 'title';
+
+                                if ($orderBy === 'title') {
+                                    $queryString['orderDesc'] = $orderDesc === 'DESC' ? '0' : '1';
+                                } else {
+                                    $queryString['orderDesc'] = '0';
+                                }
+
+                                unset($queryString['page']);
+
+                                echo http_build_query($queryString);
+
+                                ?>" class="page-link">Titolo</a>
+
+                                <span><?php
+                                    if ($orderBy === 'title') {
+                                        echo $orderDesc === 'DESC' ? ' <i class="bi bi-sort-alpha-up"></i>' :
+                                            ' <i class="bi bi-sort-alpha-down"></i>';
+                                    }
+                                    ?></span>
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                Quantità
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                Prezzo
+                                <a href="./?<?php
+
+                                $queryString = $_GET;
+                                $queryString['orderBy'] = 'price';
+
+                                if ($orderBy === 'price') {
+                                    $queryString['orderDesc'] = $orderDesc === 'DESC' ? '0' : '1';
+                                } else {
+                                    $queryString['orderDesc'] = '0';
+                                }
+
+                                unset($queryString['page']);
+
+                                echo http_build_query($queryString);
+
+                                ?>" class="page-link">Prezzo</a>
+
+                                <span><?php
+                                    if ($orderBy === 'price') {
+                                        echo $orderDesc === 'DESC' ? ' <i class="bi bi-sort-numeric-up"></i>' :
+                                            ' <i class="bi bi-sort-numeric-down"></i>';
+                                    }
+                                    ?></span>
                             </li>
                         </ul>
                     </div>

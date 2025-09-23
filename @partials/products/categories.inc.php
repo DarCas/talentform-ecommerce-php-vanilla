@@ -43,7 +43,16 @@ if (count($categories) > 0) {
         if (isset($_GET['cat'])) {
             ?>
             <li class="list-group-item text-end">
-                <a class="page-link" href="./"><small>Disattiva filtro</small></a>
+                <a class="page-link" href="./<?php
+
+                $queryString = $_GET;
+                unset($queryString['cat'], $queryString['id']);
+
+                if (count($queryString) > 0) {
+                    echo '?' . http_build_query($queryString);
+                }
+
+                ?>"><small>Disattiva filtro</small></a>
             </li>
             <?php
         }
@@ -61,13 +70,21 @@ if (count($categories) > 0) {
                     echo 'disabled';
                 }
 
-                ?>" href="./?cat=<?= htmlentities($category); ?>"><?= $category; ?></a>
+                ?>" href="./?<?php
+
+                $queryString = $_GET;
+                $queryString['cat'] = $category;
+
+                unset($queryString['page']);
+
+                echo http_build_query($queryString);
+
+                ?>"><?= $category; ?></a>
                 <span class="badge text-bg-primary rounded-pill"><?= $count; ?></span>
             </li>
             <?php
         }
         ?>
-
     </ul>
     <?php
 }
