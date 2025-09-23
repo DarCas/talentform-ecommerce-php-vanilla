@@ -84,7 +84,7 @@ try {
                    class="btn <?php
 
                    if (($product['qty'] <= 0) ||
-                       inCart($product['id'])
+                       CartsHelper::inCart($product['id'])
                    ) {
                        echo 'disabled';
                    } else {

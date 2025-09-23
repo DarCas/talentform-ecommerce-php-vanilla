@@ -34,6 +34,8 @@ Campo di testo (to-be-defined, TBD). Farà la ricerca all'interno del titolo e d
 
 La pagina dei prodotti avrà un box (TBD) con le categorie di prodotti cliccabili allo scopo di filtrare l'elenco. Accanto a ogni categoria, se possibile, visualizzeremo il numero di prodotti all'interno.
 
+Avrà un ulteriore box con elencati gli ultimi 5 prodotti visualizzati.
+
 Un prodotto potrebbe essere non disponibile, in quanto la quantità di magazzino è pari a 0 (zero).
 
 ### Lista dei prodotti paginata

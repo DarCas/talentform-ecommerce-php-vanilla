@@ -7,7 +7,6 @@
 use FakerEcommerce\Ecommerce;
 
 require_once "{$_SERVER['DOCUMENT_ROOT']}/@assets/php/includes/admin/bootstrap.inc.php";
-require_once "{$_SERVER['DOCUMENT_ROOT']}/vendor/autoload.php";
 
 /**
  * @method televisions()

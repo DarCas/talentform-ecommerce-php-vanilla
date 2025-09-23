@@ -1,17 +1,5 @@
 <?php
-/**
- * Con questa funzione verifico quale sezione del pannello di controllo sto usando in modo da attivare il link giusto.
- *
- * @param string $page
- * @return bool
- */
-function isCurrentPage(string $page): bool
-{
-    $dirname = dirname($_SERVER['SCRIPT_NAME']);
-
-    return ($dirname === $page);
-}
-
+require_once "{$_SERVER['DOCUMENT_ROOT']}/@assets/php/includes/front-end/bootstrap.inc.php";
 ?>
 <nav class="navbar navbar-expand-lg bg-body-tertiary shadow mb-5">
     <div class="container-fluid">
@@ -23,15 +11,15 @@ function isCurrentPage(string $page): bool
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
-                    <a class="nav-link <?= isCurrentPage('/admin/products') ? 'active' : '' ?>"
+                    <a class="nav-link <?= NavBarHelper::isCurrentPage('/admin/products') ? 'active' : '' ?>"
                        aria-current="page" href="/admin/products">Prodotti</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <?= isCurrentPage('/admin/customers') ? 'active' : '' ?>"
+                    <a class="nav-link <?= NavBarHelper::isCurrentPage('/admin/customers') ? 'active' : '' ?>"
                        href="/admin/customers">Clienti</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <?= isCurrentPage('/admin/carts') ? 'active' : '' ?>"
+                    <a class="nav-link <?= NavBarHelper::isCurrentPage('/admin/carts') ? 'active' : '' ?>"
                        href="/admin/carts">Ordini</a>
                 </li>
             </ul>

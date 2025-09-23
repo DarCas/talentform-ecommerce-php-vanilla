@@ -1,17 +1,5 @@
 <?php
-/**
- * Con questa funzione verifico quale sezione del pannello di controllo sto usando in modo da attivare il link giusto.
- *
- * @param string $page
- * @return bool
- */
-function isCurrentPage(string $page): bool
-{
-    $dirname = dirname($_SERVER['SCRIPT_NAME']);
-
-    return ($dirname === $page);
-}
-
+require_once "{$_SERVER['DOCUMENT_ROOT']}/@assets/php/includes/front-end/bootstrap.inc.php";
 ?>
 <nav class="navbar navbar-expand bg-body-tertiary shadow">
     <div class="container-fluid">
@@ -24,20 +12,23 @@ function isCurrentPage(string $page): bool
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
-                    <a class="nav-link <?= isCurrentPage('/') ? 'active' : '' ?>"
+                    <a class="nav-link <?= NavBarHelper::isCurrentPage('/') ? 'active' : '' ?>"
                        aria-current="page" href="/">Homepage</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <?= isCurrentPage('/products') ? 'active' : '' ?>"
+                    <a class="nav-link <?= NavBarHelper::isCurrentPage('/products') ? 'active' : '' ?>"
                        href="/products">Prodotti</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <?= isCurrentPage('/contacts') ? 'active' : '' ?>"
+                    <a class="nav-link <?= NavBarHelper::isCurrentPage('/contacts') ? 'active' : '' ?>"
                        href="/contacts">Contatti</a>
                 </li>
             </ul>
 
-            <!--a class="btn btn-outline-primary" href="/admin/@action/logout.php">Logout</a-->
+            <a class="btn btn-outline-primary me-2 <?= !CartsHelper::count() ? ' disabled': '' ?>" href="/carts">
+                <i class="bi bi-cart4"></i>
+                <sup>(<?= CartsHelper::count(); ?>)</sup>
+            </a>
 
             <form action="/products" method="get" class="d-flex" role="search">
                 <div class="input-group">
@@ -46,7 +37,6 @@ function isCurrentPage(string $page): bool
                            aria-label="Cerca un prodotto"/>
                     <button class="btn btn-success" type="submit"><i class="bi bi-search"></i></button>
                 </div>
-
             </form>
         </div>
     </div>
