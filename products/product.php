@@ -17,6 +17,8 @@ try {
         exit;
     }
 
+    LatestProductsView::upsert($product['id']);
+
     $image = $product['image'] ?
         "/@storage/products/{$product['image']}" :
         'https://placehold.co/1920x1080.png?text=Image+Not+Found';
