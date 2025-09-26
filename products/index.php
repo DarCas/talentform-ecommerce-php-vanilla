@@ -1,6 +1,7 @@
 <?php
 /**
  * @var PDO $pdo
+ * @var array[] $config
  */
 
 require_once "{$_SERVER['DOCUMENT_ROOT']}/@assets/php/includes/front-end/bootstrap.inc.php";
@@ -42,7 +43,7 @@ try {
         $itemsPerPage,
         $offset,
     ] = paginationRender(
-        itemsPerPage: 9,
+        itemsPerPage: $config['products']['pagination']['itemsPerPage'],
         itemsCount: $itemsCount,
         currentPage: $_GET['page'] ?? null,
         pageName: 'page'
@@ -132,86 +133,13 @@ try {
                 </div>
 
             </div>
-            <div class="col-4">
-                <div class="card mb-4 shadow-sm">
-                    <div class="card-header">
-                        Ordinamento prodotti
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <a href="./?<?php
+            <div class="col-4"><?php
 
-                                $queryString = $_GET;
-                                $queryString['orderBy'] = 'title';
+                require_once "{$_SERVER['DOCUMENT_ROOT']}/@partials/products/product/box-ordinamento.inc.php";
+                require_once "{$_SERVER['DOCUMENT_ROOT']}/@partials/products/product/box-categorie.inc.php";
+                require_once "{$_SERVER['DOCUMENT_ROOT']}/@partials/products/product/box-ultimi-visti.inc.php";
 
-                                if ($orderBy === 'title') {
-                                    $queryString['orderDesc'] = $orderDesc === 'DESC' ? '0' : '1';
-                                } else {
-                                    $queryString['orderDesc'] = '0';
-                                }
-
-                                unset($queryString['page']);
-
-                                echo http_build_query($queryString);
-
-                                ?>" class="page-link">Titolo</a>
-
-                                <span><?php
-                                    if ($orderBy === 'title') {
-                                        echo $orderDesc === 'DESC' ? ' <i class="bi bi-sort-alpha-up"></i>' :
-                                            ' <i class="bi bi-sort-alpha-down"></i>';
-                                    }
-                                    ?></span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <a href="./?<?php
-
-                                $queryString = $_GET;
-                                $queryString['orderBy'] = 'price';
-
-                                if ($orderBy === 'price') {
-                                    $queryString['orderDesc'] = $orderDesc === 'DESC' ? '0' : '1';
-                                } else {
-                                    $queryString['orderDesc'] = '0';
-                                }
-
-                                unset($queryString['page']);
-
-                                echo http_build_query($queryString);
-
-                                ?>" class="page-link">Prezzo</a>
-
-                                <span><?php
-                                    if ($orderBy === 'price') {
-                                        echo $orderDesc === 'DESC' ? ' <i class="bi bi-sort-numeric-up"></i>' :
-                                            ' <i class="bi bi-sort-numeric-down"></i>';
-                                    }
-                                    ?></span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="card mb-4 shadow-sm">
-                    <div class="card-header">
-                        Categorie prodotti
-                    </div>
-                    <div class="card-body">
-                        <?php require_once "{$_SERVER['DOCUMENT_ROOT']}/@partials/products/categories.inc.php"; ?>
-                    </div>
-                </div>
-
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <?php
-                        echo '<pre>';
-                        print_r(LatestProductsView::get());
-                        echo '</pre>';
-                        ?>
-                    </div>
-                </div>
-            </div>
+                ?></div>
         </div>
     </div>
 </main>

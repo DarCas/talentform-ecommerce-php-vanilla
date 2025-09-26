@@ -1,19 +1,20 @@
 <?php
 /**
  * @var PDO $pdo
+ * @var array[] $config
  */
 
 require_once "{$_SERVER['DOCUMENT_ROOT']}/@assets/php/includes/front-end/bootstrap.inc.php";
 
 try {
-    $select = $pdo->query('
+    $select = $pdo->query("
     SELECT *
     FROM products
     WHERE status = 1
     ORDER BY
         highlight DESC,
         update_date DESC
-    LIMIT 6');
+    LIMIT {$config['homepage']['productsHighlights']}");
     $products = $select->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     print_r($e);
