@@ -5,11 +5,31 @@ abstract class CartsHelper
     /**
      * Restituisce il nostro carrello
      *
-     * @return string[]
+     * @return array[]
      */
     static function get(): array
     {
-        return $_SESSION['cart'] ?? [];
+        global $pdo;
+
+        /** @var string[] $ids */
+        $ids = $_SESSION['cart'] ?? [];
+
+        if (!count($ids)) {
+            return [];
+        }
+
+        /** @var PDOStatement $select */
+        $select = $pdo->prepare('
+        SELECT id, title, image, price, qty, description
+        FROM `products`
+        WHERE `id` = :id');
+
+        return array_map(function (string $id) use ($select) {
+            $select->bindValue('id', $id);
+            $select->execute();
+
+            return $select->fetch(PDO::FETCH_ASSOC);
+        }, $ids);
     }
 
     /**
@@ -20,6 +40,20 @@ abstract class CartsHelper
     static function count(): int
     {
         return count($_SESSION['cart'] ?? []);
+    }
+
+    /**
+     * Il valore totale del nostro carrello
+     *
+     * @return float
+     */
+    static function amountCart(): float
+    {
+        return array_reduce(self::get(), function ($somma, $item) {
+            $somma += $item['price'];
+
+            return $somma;
+        }, 0);
     }
 
     /**
@@ -63,5 +97,15 @@ abstract class CartsHelper
         if (in_array($productId, $_SESSION['cart'])) {
             $_SESSION['cart'] = array_filter($_SESSION['cart'], fn($id) => $id !== $productId);
         }
+    }
+
+    /**
+     * Svuoto il carrello
+     *
+     * @return void
+     */
+    static function removeAll(): void
+    {
+        $_SESSION['cart'] = [];
     }
 }
